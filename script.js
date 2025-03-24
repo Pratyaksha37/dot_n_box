@@ -13,16 +13,38 @@ const scoreText = () => {
 
 const winnerText = () => {
   const winner = score.R > score.B ? "Red" : "Blue";
-  const winnerDiv = document.createElement("div");
-
-  winnerDiv.innerHTML = `
-    <div class="dot"></div>
-    <div class="box"></div>
-    <span>${winner} Won !!</span>
-  `;
-
-  winnerDiv.classList.add("winner-message");
-  return winnerDiv.outerHTML;
+  
+  // Create popup element
+  const popupOverlay = document.createElement("div");
+  popupOverlay.classList.add("popup-overlay");
+  
+  const popupContent = document.createElement("div");
+  popupContent.classList.add("popup-content");
+  
+  // Create winner announcement
+  const winnerMessage = document.createElement("div");
+  winnerMessage.classList.add("winner-message");
+  winnerMessage.textContent = `${winner} Won!`;
+  
+  // Create close button
+  const closeButton = document.createElement("button");
+  closeButton.classList.add("popup-close");
+  closeButton.textContent = "Play Again";
+  closeButton.onclick = () => {
+    document.querySelector(".popup-overlay").remove();
+    resetGame();
+  };
+  
+  // Assemble popup
+  popupContent.appendChild(winnerMessage);
+  popupContent.appendChild(closeButton);
+  popupOverlay.appendChild(popupContent);
+  
+  // Add to document
+  document.body.appendChild(popupOverlay);
+  
+  // Just return a simple text for the game status area
+  return `Game Over! ${winner} Wins ${score.R}-${score.B}`;
 };
 
 const isLineSelected = (line) => line.classList.contains(bgClasses.R) || line.classList.contains(bgClasses.B);
@@ -140,6 +162,21 @@ const handleLineClick = (e) => {
 const colorLine = (line) => {
   line.classList.remove(hoverClasses[turn]);
   line.classList.add(bgClasses[turn]);
+};
+
+const resetGame = () => {
+  // Clear the grid
+  const gameGridContainer = document.querySelector(".game-grid-container");
+  gameGridContainer.innerHTML = "";
+  
+  // Reset variables
+  turn = "R";
+  selectedLines = [];
+  score = { R: 0, B: 0 };
+  lineCounter = 0;
+  
+  // Recreate the game grid
+  createGameGrid();
 };
 
 createGameGrid();
